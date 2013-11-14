@@ -78,7 +78,13 @@ void DrawQueen()
 		gluCylinder(solid, .6, .4, 4, 20, 1);
 		glTranslated(0, 0, 4);
 		glutSolidTorus(.33, .42, 7, 20);
+		glTranslated(0, 0, .02);
+		gluCylinder(solid, .4, .6, 1.5, 20, 1);
+		glTranslated(0, 0, 1.5);
+		glutSolidTorus(.4, .2, 7, 20);
 
+		glTranslated(0, 0, .6);
+		glutSolidSphere(.2, 10, 5);
 	glPopMatrix();
 }
 
@@ -111,7 +117,7 @@ void DisplaySolid()
 	glOrtho(-1, 1, -1, 1, -.1, 100.0);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	gluLookAt(20, 20, 20, 1, 2, 0, 0.0, 1.0, 0.0);
+	gluLookAt(20, 20, 20, 0, 1, 0, 0.0, 1.0, 0.0);
 //	gluLookAt(.5, 0.7, 0.6, 0, 0, 0, 0.0, 1.0, 0.0);
 
 	// start drawing
@@ -124,12 +130,12 @@ void DisplaySolid()
 	glPopMatrix();
 
 	glPushMatrix();
+		glTranslated(1, 1, 0);
 		glScaled(.25, .25, .25);
 		DrawPawn();
 	glPopMatrix();	
 
 	glPushMatrix();
-		glTranslated(1, 1, 0);
 		glScaled(.25, .25, .25);
 		DrawQueen();
 	glPopMatrix();
