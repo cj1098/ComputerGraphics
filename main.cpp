@@ -1,0 +1,173 @@
+#define WINDOWS
+
+#ifdef WINDOWS
+#include <Windows.h>
+#include <gl/GL.h>
+#include <gl/GLU.h>
+#include <gl/glut.h>
+#endif
+
+#ifdef LINUX
+#include <GL/glut.h>
+#endif
+
+#ifdef MAC
+#include <OpenGL/gl.h>      
+#include <OpenGL/glu.h>     
+#include <GLUT/glut.h>      
+#endif
+
+#include <stdlib.h>
+using namespace std;
+
+void DrawRook()
+{
+	GLUquadric *solid;
+	solid = gluNewQuadric();
+	gluQuadricDrawStyle(solid, GLU_FILL);
+	glPushMatrix();
+		glRotated(-90.0f, 1, 0, 0);
+		gluCylinder(solid, 1, 1, .25, 20, 1);
+		glTranslated(0, 0, .25);
+		gluDisk(solid, 0, 1, 20, 1);
+		gluCylinder(solid, .75, .75, 3.5, 30, 1);
+		glTranslated(0, 0, 3.5);
+		gluDisk(solid, 0, 1, 20, 1);
+		gluCylinder(solid, 1, 1, .25, 20, 1);
+		glTranslated(0, 0, .25);
+		gluDisk(solid, 0, 1, 20, 1);
+		glTranslated(0, 0, .25);
+		for (int i = 0; i < 6; i++)
+		{
+			glPushMatrix();
+			glRotated((360*i)/6 + 9, 0, 0, 1);
+			glTranslated(.8, 0, 0);
+			glScaled(.5, 1, 1);
+			glutSolidCube(.5);
+			glPopMatrix();
+
+		}
+	glPopMatrix();
+
+
+}
+
+
+void DrawPawn()
+{
+	GLUquadric *solid = gluNewQuadric();
+	glPushMatrix();
+		glRotated(-90.0f, 1, 0, 0);
+		gluDisk(solid, 0, .75, 20, 1);
+		gluCylinder(solid, .5, 0, 3, 20, 1);
+		glTranslated(0,0,2.6);
+		gluSphere(solid, .4, 6, 6);
+	glPopMatrix();
+
+}
+
+void DrawQueen()
+{
+	GLUquadric *solid = gluNewQuadric();
+	glPushMatrix();
+		glRotated(-90.0f, 1, 0, 0);
+		gluDisk(solid, 0, 1, 20, 1);
+		gluCylinder(solid, 1, .75, 1, 20, 1);
+		glTranslated(0, 0, 1);
+		gluDisk(solid, 0, .75, 20, 1);
+		gluCylinder(solid, .6, .4, 4, 20, 1);
+		glTranslated(0, 0, 4);
+		glutSolidTorus(.33, .42, 7, 20);
+
+	glPopMatrix();
+}
+
+
+
+void DisplaySolid()
+{
+	// set properties of the surface material
+	GLfloat mat_ambient[]={0.7f, 0.7f, 0.7f, 1.0f}; // gray
+	GLfloat mat_diffuse[]={0.6f, 0.6f, 0.6f, 1.0f};
+	GLfloat mat_specular[]={1.0f, 1.0f, 1.0f, 1.0f};
+	GLfloat mat_shininess[]={50.0f};
+	
+	glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+	
+	// set the light source properties
+	GLfloat lightIntensity[] = {0.7f, 0.7f, 0.7f, 1.0f};
+	GLfloat light_position[] = {2.0f, 6.0f, 3.0f, 0.0f};
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightIntensity);
+	
+	// set the world window and the camera
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	double winHt = 1.0; // half-height of the window
+	//glOrtho(-winHt*64/48.0, winHt*64/48.0, -winHt, winHt, 0.1, 100.0);
+	glOrtho(-1, 1, -1, 1, -.1, 100.0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluLookAt(20, 20, 20, 1, 2, 0, 0.0, 1.0, 0.0);
+//	gluLookAt(.5, 0.7, 0.6, 0, 0, 0, 0.0, 1.0, 0.0);
+
+	// start drawing
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+	
+	glPushMatrix();
+		glTranslated(-1, 0, 0);
+		glScaled(.25, .25, .25);
+		DrawRook();
+	glPopMatrix();
+
+	glPushMatrix();
+		glScaled(.25, .25, .25);
+		DrawPawn();
+	glPopMatrix();	
+
+	glPushMatrix();
+		glTranslated(1, 1, 0);
+		glScaled(.25, .25, .25);
+		DrawQueen();
+	glPopMatrix();
+
+	glutSwapBuffers();
+}
+
+void myKeyboard(unsigned char theKey, int x, int y)
+{
+        switch(theKey)
+        {
+                case 'q':   // end display
+                        exit (0);
+                default:
+                        if (theKey == 27)   // ASCII for escape character
+                                exit(0);
+        }
+
+        glutPostRedisplay();     // invoke the "Draw" function to actually display the new image
+}
+
+int main(int argc, char **argv)
+{
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE| GLUT_RGB | GLUT_DEPTH);
+	glutInitWindowSize(640, 480);
+	glutInitWindowPosition(100, 100);
+	glutCreateWindow("Shaded example - 3D scene");
+	glutDisplayFunc(DisplaySolid);
+        glutKeyboardFunc(myKeyboard);
+	
+	glEnable(GL_LIGHTING);  //	enable the light source
+	glEnable(GL_LIGHT0);
+	glShadeModel(GL_SMOOTH);
+	glEnable(GL_DEPTH_TEST); // for hidden surface removal
+	glEnable(GL_NORMALIZE);  // normalize vectors for proper shading
+	glClearColor(0.1f, 0.1f, 0.1f, 0.0f); //background is light gray
+	glViewport(0, 0, 640, 480);
+	
+	glutMainLoop();
+}
