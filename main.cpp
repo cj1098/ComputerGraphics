@@ -20,6 +20,26 @@
 #include <stdlib.h>
 using namespace std;
 
+
+struct chessPiece
+{
+	bool isMoving;
+	int x, y, z;
+	int roll, yaw, pitch;
+	void (*model)();
+
+	chessPiece()
+	{x=0;y=0;z=0;roll=0;yaw=0; pitch=0; isMoving=false; model=NULL;}
+	chessPiece(int newx, int newy, int newz, void(*drawFunc)(void))
+	{x=newx; y=newy; z=newz; roll=0; yaw=0; pitch=0; isMoving=false; model = drawFunc;}
+};
+
+int count;
+chessPiece pieces[32];
+
+
+
+
 void DrawRook()
 {
 	GLUquadric *solid;
@@ -51,6 +71,8 @@ void DrawRook()
 
 
 }
+
+
 
 
 void DrawPawn()
@@ -88,7 +110,38 @@ void DrawQueen()
 	glPopMatrix();
 }
 
-
+void DrawBoard()
+{
+	glPushMatrix();
+	for(int i = 0; i < 8; i++)
+	{
+		glPushMatrix();
+		glTranslated(i, 0, 0);
+		for (int j = 0; j < 8; j++)
+		{
+			glPushMatrix();
+			glTranslated(0, j, 0);
+			if (i % 2 == 0)
+			{
+				if (j % 2 == 0)
+					glColor4f(0.4, 0.0, 0.0,1);
+				else
+					glColor4f(0.8, 0.8, 0.8,1);
+			}
+			else
+			{
+				if (j % 2 == 0)
+					glColor4f(0.8, 0.8, 0.8,1);
+				else
+					glColor4f(0.4, 0.0, 0.0,1);
+			}
+			glutSolidCube(1);
+			glPopMatrix();
+		}
+		glPopMatrix();
+	}
+	glPopMatrix();
+}
 
 void DisplaySolid()
 {
@@ -124,23 +177,23 @@ void DisplaySolid()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 	
 	glPushMatrix();
-		glTranslated(-1, 0, 0);
-		glScaled(.25, .25, .25);
-		DrawRook();
+		glScaled(.1, .1, .1);
+		DrawBoard();
 	glPopMatrix();
 
-	glPushMatrix();
-		glTranslated(1, 1, 0);
-		glScaled(.25, .25, .25);
-		DrawPawn();
-	glPopMatrix();	
-
-	glPushMatrix();
-		glScaled(.25, .25, .25);
-		DrawQueen();
-	glPopMatrix();
 
 	glutSwapBuffers();
+}
+
+void animateFunc()
+{
+	for(int i = 0; i < 32; i++)
+	{
+		if (pieces[i].isMoving)
+		{
+
+		}
+	}
 }
 
 void myKeyboard(unsigned char theKey, int x, int y)
@@ -169,6 +222,7 @@ int main(int argc, char **argv)
 	
 	glEnable(GL_LIGHTING);  //	enable the light source
 	glEnable(GL_LIGHT0);
+	glEnable(GL_COLOR_MATERIAL);
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST); // for hidden surface removal
 	glEnable(GL_NORMALIZE);  // normalize vectors for proper shading
